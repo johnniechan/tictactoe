@@ -41,12 +41,12 @@ function clickTask(pos)
 		if(gamestate[board_pos] == "n")
 		{
 			makeMoveO();
+			getServerMove();
 		}
 		else
 		{
 			document.getElementById("msg").innerHTML="Move already played on this spot";
 		}
-		getServerMove();
 		
 	};
 };
