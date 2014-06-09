@@ -11,11 +11,44 @@ game_complete = false;
 for(var i = 0; i < 9; i++)
 {
 	var name = "box" + (i + 1).toString();
-	console.log(name);
  	document.getElementById(name).innerHTML=gamestate[i];
 }
 
 console.log(gamestate);
+
+if(checkWin("X"))
+{
+	document.getElementById("msg").innerHTML="Game over: You Lose.";
+	game_complete = true;
+}
+
+if(boardFull())
+{
+	document.getElementById("msg").innerHTML="Game over: Tie.";
+	game_complete = true;
+}
+
+function checkWin(type)
+{
+	return ((gamestate[0] == type && gamestate[1] == type && gamestate[2] == type) ||
+		(gamestate[3] == type && gamestate[4] == type && gamestate[5] == type) ||
+		(gamestate[6] == type && gamestate[7] == type && gamestate[8] == type) ||
+		(gamestate[0] == type && gamestate[3] == type && gamestate[6] == type) ||
+		(gamestate[1] == type && gamestate[4] == type && gamestate[7] == type) ||
+		(gamestate[2] == type && gamestate[5] == type && gamestate[8] == type) ||
+		(gamestate[0] == type && gamestate[4] == type && gamestate[8] == type) ||
+		(gamestate[6] == type && gamestate[4] == type && gamestate[2] == type));
+}
+
+function boardFull()
+{
+	var is_full = true;
+	for(i = 0; i < 9; i++)
+	{
+		is_full = is_full && (gamestate[i] != "n");
+	}
+	return is_full;
+}
 
 function clickTask(pos)
 {
@@ -37,18 +70,6 @@ function clickTask(pos)
 		gamestate[board_pos] = "O";
 	}
 
-	function checkWin(type)
-	{
-		return ((gamestate[0] == type && gamestate[1] == type && gamestate[2] == type) ||
- 	 		(gamestate[3] == type && gamestate[4] == type && gamestate[5] == type) ||
-			(gamestate[6] == type && gamestate[7] == type && gamestate[8] == type) ||
-			(gamestate[0] == type && gamestate[3] == type && gamestate[6] == type) ||
-			(gamestate[1] == type && gamestate[4] == type && gamestate[7] == type) ||
-			(gamestate[2] == type && gamestate[5] == type && gamestate[8] == type) ||
-			(gamestate[0] == type && gamestate[4] == type && gamestate[8] == type) ||
-			(gamestate[6] == type && gamestate[4] == type && gamestate[2] == type));
-	}
-
 		
 	
 	return function(){
@@ -64,14 +85,14 @@ function clickTask(pos)
 					game_complete = true;
 					return;	
 				}
-
-				getServerMove();
-				if(checkWin("X"))
+				if(boardFull())
 				{
-					document.getElementById("msg").innerHTML="Game over: You Lose.";
+					document.getElementById("msg").innerHTML="Game over: Tie.";
 					game_complete = true;
 					return;	
 				}
+
+				getServerMove();
 			}
 			else
 			{
