@@ -6,6 +6,8 @@ if(typeof gamestate == "undefined")
 		,"n", "n", "n"];
 }
 
+game_complete = false;
+
 for(var i = 0; i < 9; i++)
 {
 	var name = "box" + (i + 1).toString();
@@ -35,17 +37,50 @@ function clickTask(pos)
 		gamestate[board_pos] = "O";
 	}
 
+	function checkWin(type)
+	{
+		return ((gamestate[0] == type && gamestate[1] == type && gamestate[2] == type) ||
+ 	 		(gamestate[3] == type && gamestate[4] == type && gamestate[5] == type) ||
+			(gamestate[6] == type && gamestate[7] == type && gamestate[8] == type) ||
+			(gamestate[0] == type && gamestate[3] == type && gamestate[6] == type) ||
+			(gamestate[1] == type && gamestate[4] == type && gamestate[7] == type) ||
+			(gamestate[2] == type && gamestate[5] == type && gamestate[8] == type) ||
+			(gamestate[0] == type && gamestate[4] == type && gamestate[8] == type) ||
+			(gamestate[6] == type && gamestate[4] == type && gamestate[2] == type));
+	}
+
 		
 	
 	return function(){
-		if(gamestate[board_pos] == "n")
+		if(!game_complete)
 		{
-			makeMoveO();
-			getServerMove();
+			if(gamestate[board_pos] == "n")
+			{
+				makeMoveO();
+				
+				if(checkWin("O"))
+				{
+					document.getElementById("msg").innerHTML="Game over: You Win.";
+					game_complete = true;
+					return;	
+				}
+
+				getServerMove();
+				if(checkWin("X"))
+				{
+					document.getElementById("msg").innerHTML="Game over: You Lose.";
+					game_complete = true;
+					return;	
+				}
+			}
+			else
+			{
+				document.getElementById("msg").innerHTML="Move already played on this spot";
+			}
 		}
 		else
 		{
-			document.getElementById("msg").innerHTML="Move already played on this spot";
+			document.getElementById("msg").innerHTML="Game over, restart the game.";
 		}
 		
 	};
