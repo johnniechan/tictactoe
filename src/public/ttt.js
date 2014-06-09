@@ -7,13 +7,7 @@ if(typeof gamestate == "undefined")
 }
 
 game_complete = false;
-
-for(var i = 0; i < 9; i++)
-{
-	var name = "box" + (i + 1).toString();
- 	document.getElementById(name).innerHTML=gamestate[i];
-}
-
+drawBoard();
 console.log(gamestate);
 
 if(checkWin("X"))
@@ -26,6 +20,45 @@ if(boardFull())
 {
 	document.getElementById("msg").innerHTML="Game over: Tie.";
 	game_complete = true;
+}
+
+
+
+function drawBoard()
+{
+	for(var i = 0; i < 9; i++)
+	{
+		var name = "box" + (i + 1).toString();
+		document.getElementById(name).innerHTML="";
+
+		if(gamestate[i] == "O")
+		{
+			var new_el = document.createElement('div');
+			new_el.setAttribute('class', 'circle');
+			document.getElementById(name).appendChild(new_el);
+		}
+		else if(gamestate[i] == "X")
+		{
+			document.getElementById(name).innerHTML="X";
+			
+		}
+		else
+		{
+		}
+
+			
+	}
+}
+
+function resetBoard()
+{
+	document.getElementById("msg").innerHTML="Restarting the game.";
+	for(i = 0; i < 9; i++)
+	{
+		gamestate[i] = "n";
+	}
+	drawBoard();
+	game_complete = false;
 }
 
 function checkWin(type)
@@ -58,16 +91,14 @@ function clickTask(pos)
 
 	function makeMoveX()
 	{
-		box_element.innerHTML="X";
 		gamestate[board_pos] = "X";
+		drawBoard();
 	}
 
 	function makeMoveO()
 	{
-		var new_el = document.createElement('div');
-		new_el.setAttribute('class', 'circle');
-		box_element.appendChild(new_el);
 		gamestate[board_pos] = "O";
+		drawBoard();
 	}
 
 		
@@ -147,4 +178,5 @@ document.getElementById("box6").onclick = clickTask(5);
 document.getElementById("box7").onclick = clickTask(6);
 document.getElementById("box8").onclick = clickTask(7);
 document.getElementById("box9").onclick = clickTask(8);
+document.getElementById("reset").onclick = resetBoard;
 
