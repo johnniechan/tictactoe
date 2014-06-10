@@ -10,6 +10,7 @@ configure {Sinatra::Application.reset!; use Rack::Reloader}
 #  This block is executed prior to each HTTP call (like a servlet filter)
 #
 before do
+  @sys_path = File.dirname(__FILE__)
 end
 
 
@@ -19,11 +20,10 @@ end
 
 
 get '/ttt.html' do
-  return read_file 'public/ttt.html'
 end
 
 post '/ttt.html' do
-  body_file = File.open('public/ttt.html', 'rb')
+  body_file = File.open(@sys_path + '/public/ttt.html', 'rb')
   body = body_file.read
 
   h = Array.new(9) {|index| 'n'}
