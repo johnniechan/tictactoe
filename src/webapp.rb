@@ -1,7 +1,7 @@
 #
 # Import the packages required for Ruby and Java
 #
-%w{rubygems sinatra}.each{|r|require r}
+%w{rubygems bundler/setup sinatra}.each{|r|require r}
 
 # Configuration option that allows changes without restarting server - sometimes :)
 configure {Sinatra::Application.reset!; use Rack::Reloader}
