@@ -2,9 +2,7 @@ function tictactoeController(_model, _view)
 {
 	this.model = _model;
 	this.view = _view;
-	console.log(this);
 
-	// Q: Why can't I just assign without the "this." part?
 	this.view.elements.board.box0.onclick = this.clickTask(0);
 	this.view.elements.board.box1.onclick = this.clickTask(1);
 	this.view.elements.board.box2.onclick = this.clickTask(2);
@@ -48,7 +46,7 @@ tictactoeController.prototype = {
 					}
 					else
 					{
-						view.drawBoard();
+						view.drawBox(pos, "O");
 					}
 					
 				}	
@@ -67,7 +65,7 @@ tictactoeController.prototype = {
 		return function()
 		{
 			model.resetBoard();
-			view.drawBoard();
+			view.clearBoard();
 		}
 	},
 

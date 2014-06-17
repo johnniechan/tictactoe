@@ -14,6 +14,11 @@ function tictactoeModel(input_state)
 
 tictactoeModel.prototype = {
 
+	getBox : function(pos)
+	{
+		return this.gamestate[pos];
+	},
+
 	/**** Manipulate Board ****/
 
 	placeToken : function(player, pos)

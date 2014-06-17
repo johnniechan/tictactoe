@@ -10,8 +10,7 @@ else
 }
 
 
-var ttt_view = new tictactoeView(ttt_model,
-				{message_box : "msg",
+var ttt_view = new tictactoeView({message_box : "msg",
 					reset_button: "reset",
 					box0 : "box1",
 					box1 : "box2",
@@ -25,4 +24,7 @@ var ttt_view = new tictactoeView(ttt_model,
 
 var ttt_controller = new tictactoeController(ttt_model, ttt_view);
 
-ttt_view.drawBoard();
+for(i = 0; i < 9; i++)
+{
+	ttt_view.drawBox(i, ttt_model.getBox(i));
+}

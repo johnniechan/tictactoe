@@ -1,7 +1,5 @@
-function tictactoeView(_model, _elements)
+function tictactoeView(_elements)
 {
-	this.model = _model;
-
 	this.elements = {
 		message_box : document.getElementById(_elements.message_box),
 		reset_button: document.getElementById(_elements.reset_button),
@@ -29,33 +27,34 @@ tictactoeView.prototype = {
 		message_box.innerHTML = msg;
 	},
 
-	drawBoard: function()
+	drawBox: function(pos, token)
 	{
-		var board = this.elements.board;
-		
-		for(var i = 0; i < 9; i++)
+		var name = "box" + pos.toString();
+		this.elements.board[name].innerHTML="";
+		if(token == "O")
 		{
-			var name = "box" + i.toString();
-			board[name].innerHTML="";
+			var new_el = document.createElement('div');
+			new_el.setAttribute('class', 'circle');
+			this.elements.board[name].appendChild(new_el);
+		}
+		else if(token == "X")
+		{
+			this.elements.board[name].innerHTML="X";
+			
+		}
+		else
+		{
+		}
 
-			if(this.model.gamestate[i] == "O")
-			{
-				var new_el = document.createElement('div');
-				new_el.setAttribute('class', 'circle');
-				this.elements.board[name].appendChild(new_el);
-			}
-			else if(this.model.gamestate[i] == "X")
-			{
-				this.elements.board[name].innerHTML="X";
-				
-			}
-			else
-			{
-			}
 
-				
+	},
+
+	clearBoard: function()
+	{
+		for(i = 0; i < 9; i++)
+		{
+			this.drawBox(i, "n");
 		}
 	}
-
 };
 	
