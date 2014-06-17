@@ -24,3 +24,6 @@ task :run => ["build/public/ttt.js", "build/public/ttt.html", "build/webapp.rb"]
 	sh "ruby build/webapp.rb"
 end
 
+task :clean do
+	sh "rm -rf build"
+end
