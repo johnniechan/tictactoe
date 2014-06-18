@@ -19,9 +19,6 @@ get '/hi' do
 end
 
 
-get '/ttt.html' do
-end
-
 post '/ttt.html' do
   body_file = File.open(@sys_path + '/public/ttt.html', 'rb')
   body = body_file.read
@@ -54,7 +51,7 @@ post '/ttt.html' do
   
   header = {'move' => v.to_s}
   header.merge!(params)
-  return [201, header, body]
+  return [200, header, body]
 end
 
 get '/how' do
@@ -70,4 +67,8 @@ end
 
 get '/*' do
   redirect '/ttt.html'
+end
+
+post '/api/opp_move' do
+	return [200, {'test' => 'val'}, "Hi"]
 end

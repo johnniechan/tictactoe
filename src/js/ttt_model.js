@@ -10,6 +10,7 @@ function tictactoeModel(input_state)
 				  "n", "n", "n",
 				  "n", "n", "n"];
 	}
+
 }
 
 tictactoeModel.prototype = {

@@ -40,15 +40,12 @@ tictactoeController.prototype = {
 				}
 				else
 				{
+					view.drawBox(pos, "O");
+
 					if(!_this.checkGameOver())
 					{
 						_this.getServerMove();
 					}
-					else
-					{
-						view.drawBox(pos, "O");
-					}
-					
 				}	
 			}
 			else
@@ -92,8 +89,35 @@ tictactoeController.prototype = {
 	
 	getServerMove : function()
 	{
-		this.postToServer("ttt.html", this.model.gamestate, "post");
+		//this.postToServer("ttt.html", this.model.gamestate, "post");
+
+		this.ajaxServerRequest("api/opp_move", this.model.gamestate);
+
 	},
+
+	
+	ajaxServerRequest : function(path, params)
+	{
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = this.ajaxServerResponseTask(xmlhttp);
+		xmlhttp.open("POST", path, true);
+		xmlhttp.send(); 
+	},
+
+	ajaxServerResponseTask : function (xmlhttp)
+	{
+		return function(){
+			if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+				console.log(xmlhttp.responseText);
+			}
+			else
+			{
+				console.log("not ready");
+			}
+		};
+	},
+
 
 	
 	postToServer : function(path, params, method) 
