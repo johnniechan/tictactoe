@@ -1,7 +1,7 @@
 #
 # Import the packages required for Ruby and Java
 #
-%w{rubygems bundler/setup sinatra}.each{|r|require r}
+%w{rubygems bundler/setup sinatra json}.each{|r|require r}
 
 # Configuration option that allows changes without restarting server - sometimes :)
 configure {Sinatra::Application.reset!; use Rack::Reloader}
@@ -70,5 +70,48 @@ get '/*' do
 end
 
 post '/api/opp_move' do
-	return [200, {'test' => 'val'}, "Hi"]
+  jsonstr = request.env["rack.input"].read
+  request_data = JSON.parse(jsonstr);
+  puts request_data
+  if request_data.has_key?("ai_type")
+      ai_type = request_data["ai_type"]
+  else
+      ai_type = 0
+  end 
+
+
+  puts "ai type: #{ai_type}"
+  
+  board = request_data["board"]
+  player = request_data["who"]
+
+  response_data = Hash.new
+  response_data["valid_move"] = false
+  response_data["who"] = player
+
+  if ai_type == 0 then
+    puts "Ai #0"
+    count = 0
+    board.each{ |val| count = count + ((val == 'n')?1:0)}
+    puts count
+    if count != 0 then
+      v = rand(count)
+      puts "Seek Box ##{v}"
+        
+      for i in 0..8 do
+        if board[i] == "n" then
+          if v == 0 then
+            response_data["valid_move"] = true
+            response_data["move"] = i
+            break
+          else
+            v -= 1
+          end
+        end
+      end
+        
+    end
+  end
+
+  return [200, JSON.generate(response_data)]
 end

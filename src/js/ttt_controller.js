@@ -44,7 +44,7 @@ tictactoeController.prototype = {
 
 					if(!_this.checkGameOver())
 					{
-						_this.getServerMove();
+						_this.askServerNextMove("X");
 					}
 				}	
 			}
@@ -87,21 +87,26 @@ tictactoeController.prototype = {
 	},
 
 	
-	getServerMove : function()
+	askServerNextMove : function(who)
 	{
 		//this.postToServer("ttt.html", this.model.gamestate, "post");
 
-		this.ajaxServerRequest("api/opp_move", this.model.gamestate);
+		var data = {"board" : this.model.gamestate, "who" : who};
+
+		this.ajaxServerRequest("api/opp_move", data);
 
 	},
 
 	
-	ajaxServerRequest : function(path, params)
+	ajaxServerRequest : function(path, data)
 	{
-		xmlhttp = new XMLHttpRequest();
+		var xmlhttp = new XMLHttpRequest();
+		var JSONData = JSON.stringify(data);
+		console.log(JSONData);
 		xmlhttp.onreadystatechange = this.ajaxServerResponseTask(xmlhttp);
 		xmlhttp.open("POST", path, true);
-		xmlhttp.send(); 
+		xmlhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+		xmlhttp.send(JSONData); 
 	},
 
 	ajaxServerResponseTask : function (xmlhttp)
@@ -109,11 +114,20 @@ tictactoeController.prototype = {
 		return function(){
 			if (xmlhttp.readyState==4 && xmlhttp.status==200)
 			{
-				console.log(xmlhttp.responseText);
-			}
-			else
-			{
-				console.log("not ready");
+				var resp_data = JSON.parse(xmlhttp.responseText);
+				if(resp_data.valid_move)
+				{
+					if(!this.model.placeToken(resp_data.who, resp_data.move))
+					{
+						this.view.putMessage("Server Error: Invalid mark.");
+					}
+					else
+					{
+						this.view.drawBox(resp_data.move, resp_data.who);
+						this.checkGameOver();
+					}	
+					
+				}
 			}
 		};
 	},
