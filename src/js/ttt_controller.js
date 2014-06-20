@@ -111,20 +111,23 @@ tictactoeController.prototype = {
 
 	ajaxServerResponseTask : function (xmlhttp)
 	{
+		var model = this.model;
+		var view = this.view;
+		var _this = this;
 		return function(){
 			if (xmlhttp.readyState==4 && xmlhttp.status==200)
 			{
 				var resp_data = JSON.parse(xmlhttp.responseText);
 				if(resp_data.valid_move)
 				{
-					if(!this.model.placeToken(resp_data.who, resp_data.move))
+					if(!model.placeToken(resp_data.who, resp_data.move))
 					{
-						this.view.putMessage("Server Error: Invalid mark.");
+						view.putMessage("Server Error: Invalid mark.");
 					}
 					else
 					{
-						this.view.drawBox(resp_data.move, resp_data.who);
-						this.checkGameOver();
+						view.drawBox(resp_data.move, resp_data.who);
+						_this.checkGameOver();
 					}	
 					
 				}
