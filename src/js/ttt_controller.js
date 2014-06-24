@@ -146,7 +146,7 @@ tictactoeController.prototype = {
 	},
 };
 
-function serverRequestNextMove(path, data, on_complete)
+function serverRequestNextMove(path, data, done)
 {
 	var xmlhttp = new XMLHttpRequest();
 	var req_data = JSON.stringify(data);
@@ -158,7 +158,7 @@ function serverRequestNextMove(path, data, on_complete)
 			{
 				var resp_data = JSON.parse(xmlhttp.responseText);
 				console.log(resp_data);
-				on_complete(resp_data);
+				done(resp_data);
 			}
 			else
 			{
