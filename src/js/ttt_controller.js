@@ -96,12 +96,14 @@ tictactoeController.prototype = {
 		var data = {"board" : this.model.gamestate, "who" : who};
 
 		serverRequestNextMove("api/opp_move", data, function(resp_data){
-			console.log("in: " + resp_data);
+			console.log(resp_data);
 			if(resp_data.valid_move)
 			{
+			console.log(resp_data);
 				if(that.model.placeToken(resp_data.who, resp_data.move))
 				{
-					that.view.drawBox(resp_data.move.resp_data.who);
+			console.log(resp_data);
+					that.view.drawBox(resp_data.move, resp_data.who);
 					that.checkGameOver();
 				}
 				else
