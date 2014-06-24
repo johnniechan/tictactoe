@@ -44,7 +44,7 @@ tictactoeController.prototype = {
 
 					if(!_this.checkGameOver())
 					{
-						_this.askServerNextMove("X");
+						_this.requestNextMove("X");
 					}
 				}	
 			}
@@ -87,26 +87,36 @@ tictactoeController.prototype = {
 	},
 
 	
-	askServerNextMove : function(who)
+	requestNextMove : function(who)
 	{
 		//this.postToServer("ttt.html", this.model.gamestate, "post");
 
+		that = this;
+
 		var data = {"board" : this.model.gamestate, "who" : who};
 
-		this.ajaxServerRequest("api/opp_move", data);
+		serverRequestNextMove("api/opp_move", data, function(resp_data){
+			console.log("in: " + resp_data);
+			if(resp_data.valid_move)
+			{
+				if(that.model.placeToken(resp_data.who, resp_data.move))
+				{
+					that.view.drawBox(resp_data.move.resp_data.who);
+					that.checkGameOver();
+				}
+				else
+				{
+					Error("requestNextMove: Invalid Server Move");
+				}
+			}
+			else
+			{
+				Error("requestNextMove: Server could not make a move.");
+			}
 
-	},
 
-	
-	ajaxServerRequest : function(path, data)
-	{
-		var xmlhttp = new XMLHttpRequest();
-		var JSONData = JSON.stringify(data);
-		console.log(JSONData);
-		xmlhttp.onreadystatechange = this.ajaxServerResponseTask(xmlhttp);
-		xmlhttp.open("POST", path, true);
-		xmlhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-		xmlhttp.send(JSONData); 
+		});
+
 	},
 
 	ajaxServerResponseTask : function (xmlhttp)
@@ -134,31 +144,29 @@ tictactoeController.prototype = {
 			}
 		};
 	},
-
-
-	
-	postToServer : function(path, params, method) 
-	{
-	    method = method || "post"; // Set method to post by default if not specified.
-
-	    var form = document.createElement("form");
-	    form.setAttribute("method", method);
-	    form.setAttribute("action", path);
-
-	    for(var key in params) {
-		if(params.hasOwnProperty(key)) {
-		    var hiddenField = document.createElement("input");
-		    hiddenField.setAttribute("type", "hidden");
-		    hiddenField.setAttribute("name", key);
-		    hiddenField.setAttribute("value", params[key]);
-
-		    form.appendChild(hiddenField);
-		 }
-	    }
-
-	    document.body.appendChild(form);
-	    form.submit();
-	}
-
-	
 };
+
+function serverRequestNextMove(path, data, on_complete)
+{
+	var xmlhttp = new XMLHttpRequest();
+	var req_data = JSON.stringify(data);
+	console.log(req_data);
+	xmlhttp.onreadystatechange = function() {
+		if(xmlhttp.readyState == 4)
+		{
+			if(this.status == 200)
+			{
+				var resp_data = JSON.parse(xmlhttp.responseText);
+				console.log(resp_data);
+				on_complete(resp_data);
+			}
+			else
+			{
+				throw Error("ajaxServerRequest: Invalid status code " + this.status);
+			}
+		}
+	};
+	xmlhttp.open("POST", path, true);
+	xmlhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+	xmlhttp.send(req_data); 
+}
