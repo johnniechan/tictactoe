@@ -6,13 +6,19 @@
 # Configuration option that allows changes without restarting server - sometimes :)
 configure {Sinatra::Application.reset!; use Rack::Reloader}
 
+
 #
 #  This block is executed prior to each HTTP call (like a servlet filter)
 #
 before do
-  @sys_path = File.dirname(__FILE__)
 end
 
+@sys_path = File.expand_path File.dirname __FILE__
+puts $:
+
+puts "::" + @sys_path
+puts __FILE__
+require "#{@sys_path}/ttt_model"
 
 get '/hi' do
   "Hello, World!"
@@ -85,33 +91,19 @@ post '/api/opp_move' do
   board = request_data["board"]
   player = request_data["who"]
 
+  strategy = RandomStrategy.new
+  strategy = PerfectStrategy.new
+
   response_data = Hash.new
   response_data["valid_move"] = false
   response_data["who"] = player
 
   if ai_type == 0 then
-    puts "Ai #0"
-    count = 0
-    board.each{ |val| count = count + ((val == 'n')?1:0)}
-    puts count
-    if count != 0 then
-      v = rand(count)
-      puts "Seek Box ##{v}"
-        
-      for i in 0..8 do
-        if board[i] == "n" then
-          if v == 0 then
             response_data["valid_move"] = true
-            response_data["move"] = i
-            break
-          else
-            v -= 1
-          end
-        end
-      end
-        
-    end
+            response_data["move"] = strategy.getMove board, player
   end
+
+  puts response_data
 
   return [200, JSON.generate(response_data)]
 end

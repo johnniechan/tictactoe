@@ -9,6 +9,11 @@ file "build/public/ttt.js" => ["build/public", "src/js/ttt_model.js", "src/js/tt
 		cat src/js/ttt.js >> build/public/ttt.js]
 end
 
+file "build/ttt_model.rb" => ["build", "src/server/ttt_model.rb"] do
+	puts "Generating build/ttt_model.rb"
+	%x[cp src/server/ttt_model.rb build/]
+end
+
 file "build/webapp.rb" => ["build", "src/server/webapp.rb"] do
 	puts "Generating build/webapp.rb"
 	%x[cp src/server/webapp.rb build/webapp.rb]
@@ -19,7 +24,7 @@ file "build/public/ttt.html" => ["build/public", "src/html/ttt.html"] do
 	%x[cp src/html/ttt.html build/public/ttt.html]
 end
 
-task :run => ["build/public/ttt.js", "build/public/ttt.html", "build/webapp.rb"] do 
+task :run => ["build/public/ttt.js", "build/public/ttt.html", "build/webapp.rb", "build/ttt_model.rb"] do 
 	puts "Running Tic-Tac-Toe"
 	sh "ruby build/webapp.rb"
 end
