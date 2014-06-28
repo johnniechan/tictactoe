@@ -78,7 +78,7 @@ end
 post '/api/opp_move' do
   jsonstr = request.env["rack.input"].read
   request_data = JSON.parse(jsonstr);
-  puts request_data
+  puts "in: #{request_data}"
   if request_data.has_key?("ai_type")
       ai_type = request_data["ai_type"]
   else
@@ -103,7 +103,7 @@ post '/api/opp_move' do
             response_data["move"] = strategy.getMove board, player
   end
 
-  puts response_data
+  puts "out: #{response_data}"
 
   return [200, JSON.generate(response_data)]
 end
