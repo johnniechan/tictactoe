@@ -32,10 +32,21 @@ class RandomStrategy
 end
 
 class PerfectStrategy
+
+  # Win Conditions
   WIN_COND = [[0,1,2], [3,4,5], [6,7,8],
               [0,3,6], [1,4,7], [2,5,8],
               [0,4,8], [2,4,6]]
- # DBL_COND = 
+
+  # Trap Locations
+  DBL_COND = WIN_COND.combination(2).to_a.delete_if{ |cond| !(cond[1].include?(cond[0][0]) || cond[1].include?(cond[0][1]) || cond[1].include?(cond[0][2]))} 
+  DBL_COMB = DBL_COND.map{ |cond| (cond[0] + cond[1])}
+  TRAP_POINT = DBL_COMB.map.with_index{ |comb, i| comb.detect{ |box| DBL_COMB[i].count(box) > 1 } }
+  DBL_COMB = DBL_COMB.map{ |comb| comb.uniq}
+
+  puts TRAP_POINT.to_s
+  puts DBL_COMB.to_s
+
   def getMove(board, who)
     if who == "O" then opponent = "X" else opponent = "O" end
     rnd_strat = RandomStrategy.new
@@ -53,42 +64,68 @@ class PerfectStrategy
                    comb.each{ |index| tokens[board[index]] += 1}
                    plays.push(tokens) }
     
-
-    puts "set:" + plays.to_s
-
     # Search for Plays that will Win
     moves = Array.new
     plays.each_with_index{ |play, i| 
-                                     print play, " == " , play["n"], " == " , play[who]
                                      if play["n"] == 1 && play[who] == 2 then
-                                       print "%% WIN %%\n"
                                        moves.push( {:cond => i, :move => WIN_COND[i].find_all{ |j| board[j] == "n"} } )
                                      end
                          }
 
     if moves.length != 0 then
-      print "WIN\n"
       return moves.sample[:move] 
     end
 
     # Search for Plays that Opponent will Win
     moves = Array.new
     plays.each_with_index{ |play, i| 
-                                     print play, " == " , play["n"], " == " , play[opponent]
                                      if play["n"] == 1 && play[opponent] == 2 then
-                                       print "%% BLOCK %%\n"
                                        moves.push( {:cond => i, :move => WIN_COND[i].find_all{ |j| board[j] == "n"} } )
                                      end
                          }
 
     if moves.length != 0 then
-      print "BLOCK\n"
       return moves.sample[:move] 
     end
 
-    # Search for Double Wins
+    # Create Win Condition
+   
+    create = WIN_COND.select{ |cond| cond.count{ |box| board[box] == who } == 1 \
+                                  && cond.count{ |box| board[box] == "n" } == 2 }
 
+
+    # Search for Traps
+    traps = TRAP_POINT.select.with_index{ |point, i| DBL_COMB[i].count{ |box| board[box] == opponent } == 2 \
+                                                 && DBL_COMB[i].count{ |box| board[box] == "n" } == 3 \
+                                                 && board[point] == "n"}
+
+    create_cands = Array.new
     
+    create.each{ |cond| create_cands += cond}
+    create_cands.uniq!
+
+    if create_cands != nil then
+      create_cands.select!{ |cand| board[cand] == "n"}
+    end
+
+    puts "++" + create_cands.to_s
+
+    both = create_cands & traps
+
+    if !both.empty? then
+      puts "Two birds" + both.to_s
+      return both.sample
+    end
+
+    if !create.empty? then
+      puts "Try to Win: " + create.to_s
+      return create.sample.select{ |box| board[box] == "n"}.sample
+    end
+    if !traps.empty? then
+      puts "Found Traps: " + traps.to_s
+      return traps.sample
+    end
+
     # Default Moves
     if board[4] == "n" then
     #Center Move
@@ -106,6 +143,7 @@ class PerfectStrategy
       return rnd_strat.getMove(board, who)
     end
   end
+  
 end
     
     

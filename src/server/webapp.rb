@@ -14,10 +14,7 @@ before do
 end
 
 @sys_path = File.expand_path File.dirname __FILE__
-puts $:
 
-puts "::" + @sys_path
-puts __FILE__
 require "#{@sys_path}/ttt_model"
 
 get '/hi' do
